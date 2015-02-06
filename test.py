@@ -1,24 +1,39 @@
-import pygame
+import pygame, sys, os
 import time
 pygame.init()
 screen = pygame.display.set_mode((400,300))
 done = False
 is_blue = True
 x = 0
-y = 180
+y = 170
 a = 5
 t = 0
-def jump():
+def drawBG(screen):
+    background = pygame.Surface(screen.get_size())
+    background.fill((0, 128, 255))
+    screen.blit(background, (0, 0))
+    pygame.draw.rect(screen, (165,140,100), pygame.Rect(0, 210, 400, 100))
+
+def jump(screen):
     global a
     global t
-    if(t<5):
-        t+=1
-        return -0.5*a*(t**2)
-    else:
-        t+=1
-        if(t == 10):
-            t = 0
-        return 0.5*a*((t-5)**2)
+    global y
+    global player
+    while(t<10):
+        if(t<5):
+            t+=1
+            y-=0.5*a*(t**2)
+        else:
+            t+=1
+            y+=0.5*a*((t-5)**2)
+        drawBG(screen)
+        #pygame.draw.rect(screen, color, pygame.Rect(x, y, 20, 30))
+        screen.blit(player, (x, y))
+        pygame.display.flip()
+        time.sleep(0.05)
+        #screen.fill(0)
+    t = 0
+        
 
 
 def checkDims(x,y,x1,y1):
@@ -33,7 +48,9 @@ def checkDims(x,y,x1,y1):
     else:
         pass
     return [x,y]
-
+player = pygame.image.load(os.path.join("download.png"))
+player = pygame.transform.scale(player, (30, 40))
+player.convert()
 while not done:
     screen.fill(0)
     color = (255, 100, 0)
@@ -58,7 +75,7 @@ while not done:
     if pressed[pygame.K_RIGHT]:
             x+=10
     if pressed[pygame.K_SPACE]:
-        y += int(jump())
+            jump(screen)
     elif event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
         a = 5
         t = 0
@@ -67,11 +84,10 @@ while not done:
     #        y-=10
     #elif pressed[pygame.K_DOWN]:
     #        y+=10
+    drawBG(screen)
+    #pygame.draw.rect(screen, color, pygame.Rect(x, y, 20, 30))
+    screen.blit(player, (x, y))
+        #drawBG(screen)
     x,y = checkDims(x,y,400,200)
-    background = pygame.Surface(screen.get_size())
-    background.fill((0, 128, 255))
-    screen.blit(background, (0, 0))
-    pygame.draw.rect(screen, color, pygame.Rect(x, y, 20, 30))
-    pygame.draw.rect(screen, (165,140,100), pygame.Rect(0, 200, 400, 100))
     pygame.display.flip()
     time.sleep(0.05)
